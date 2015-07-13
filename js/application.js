@@ -1,5 +1,4 @@
 'use strict';
-
 //Game Class
 function Game() {
   //variables
@@ -7,7 +6,7 @@ function Game() {
   this.movesArray = [];
 
   //cup constructor
-  this.cup = function (name,hasBall) {
+  this.Cup = function (name, hasBall) {
     this.name = name || "tempCup";
     this.hasBall = hasBall || false;
     this.getKeyFromValue = function(value) {
@@ -18,11 +17,41 @@ function Game() {
       }
     }
   }
+  
+  //Move constructor
+  function Move(position, direction) {
+    this.position = position;
+    this.direction = direction;
+  }
+
+  function executeMove(move, arr) {
+    var cupMovePosition = move.position;
+    var cupMoveDirection = move.direction;
+    var cupAffectedPosition;
+    var tempArr;
+    if (cupMoveDirection == 'left') {
+      if (cupMovePosition > 0) {
+        cupAffectedPosition = move.position - 1;
+      } else {
+        cupAffectedPosition = 2;
+      }
+    } else if (cupMoveDirection == 'right') {
+      if (cupMovePosition < 2) {
+        cupAffectedPosition = move.position + 1;
+      } else {
+        cupAffectedPosition = 0;
+      }
+    }
+    
+    tempCup = cupArray[cupMovePosition];
+    cupArray[cupMovePosition] = cupArray[cupAffectedPosition];
+    cupArray[cupAffectedPosition] = tempCup;
+  }
 
   this.createCups = function () {
     //generate cups
     for (var i = 0; i < 3; i++) {
-      this.cupArray.push(new this.cup("cup" + eval('i+1'),false));
+      this.cupArray.push(new this.Cup("cup" + eval('i+1'),false));
     }
   }
 
@@ -70,12 +99,9 @@ function Game() {
     console.log(this.cupArray);
     this.cupArray = this.executeMove(this.move1);
   }
-
 }
 
 $(document).ready(function() {
-
-
   var game = new Game();
   $('#game-start').click(function() {
     game.start();
@@ -83,6 +109,5 @@ $(document).ready(function() {
     $('.splash-screen').remove();
   });
 });
-
 
 
