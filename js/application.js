@@ -29,7 +29,11 @@ $(document).ready(function() {
     var cupMovePosition = move.position;
     var cupMoveDirection = move.direction;
     var cupAffectedPosition;
-    var tempArr;
+    var tempArr = [];
+    //deep copy cupArray
+    for (var i = 0; i < cupArray.length; i++) {
+      tempArr.push(cupArray[i]);
+    }
     if (cupMoveDirection == 'left') {
       if (cupMovePosition > 0) {
         cupAffectedPosition = move.position - 1;
@@ -45,8 +49,10 @@ $(document).ready(function() {
     }
     
     tempCup = cupArray[cupMovePosition];
-    cupArray[cupMovePosition] = cupArray[cupAffectedPosition];
-    cupArray[cupAffectedPosition] = tempCup;
+    tempArr[cupMovePosition] = tempArr[cupAffectedPosition];
+    tempArr[cupAffectedPosition] = tempCup;
+
+    return tempArr;
   }
 
 
@@ -60,15 +66,19 @@ $(document).ready(function() {
 
   //Pick a cup
   console.log("Where to insert ball");
+  //set cup selected
+  var cupSelected = prompt();
 
+  cupArray[cupSelected].hasBall = true;
+  //Test moves
   var move1 = new move(0,'left');
   var move2 = new move(1,'left');
   var move3 = new move(2,'right');
   var move4 = new move(1,'right');
-  var cupSelected = prompt();
-  //set cup selected
-  cupArray[cupSelected].hasBall = true;
-  executeMove(move1,cupArray);
+  cupArray = executeMove(move1,cupArray);
+  console.log(cupArray);
+  cupArray = executeMove(move2,cupArray);
+  console.log(cupArray);
 
 
 
