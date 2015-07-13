@@ -1,3 +1,7 @@
+function rand(limit) {
+  return Math.floor((Math.random()*(limit+1)));
+}
+
 //Game Class
 function Game() {
   //variables
@@ -61,7 +65,16 @@ function Game() {
     return tempArr;
   }
 
-  
+  this.generateComputer = function () {
+    for (var i = 0; i < 10; i++) {
+      //generate numbers for move
+      var randomPosition = rand(2);
+      var randomDirection = rand(1);
+      var randomDirectionString
+      randomDirection===0 ? randomDirectionString = 'left' : randomDirectionString = 'right';
+      this.movesArray.push(new this.move(randomPosition,randomDirectionString));
+    }
+  }
 
   this.start = function () {
     console.log("game Started!");
@@ -81,7 +94,9 @@ $(document).ready(function() {
   $('#game-start').click(function() {
     game.start();
     console.log(game.cupArray);
+    game.generateComputer();
     $('.splash-screen').remove();
+    console.log(game.movesArray);
   });
 
 
