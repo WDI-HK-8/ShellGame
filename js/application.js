@@ -23,7 +23,11 @@ $(document).ready(function() {
     var cupMovePosition = move.position;
     var cupMoveDirection = move.direction;
     var cupAffectedPosition;
-    var tempArr;
+    var tempArr = [];
+    //deep copy cupArray
+    for (var i = 0; i < cupArray.length; i++) {
+      tempArr.push(cupArray[i]);
+    }
     if (cupMoveDirection == 'left') {
       if (cupMovePosition > 0) {
         cupAffectedPosition = move.position - 1;
@@ -38,8 +42,10 @@ $(document).ready(function() {
       }
     }
     tempCup = cupArray[cupMovePosition];
-    cupArray[cupMovePosition] = cupArray[cupAffectedPosition];
-    cupArray[cupAffectedPosition] = tempCup;
+    tempArr[cupMovePosition] = tempArr[cupAffectedPosition];
+    tempArr[cupAffectedPosition] = tempCup;
+
+    return tempArr;
   }
 
   //generate cups
@@ -54,6 +60,8 @@ $(document).ready(function() {
   console.log(cupArray);
   //Pick a cup
   console.log("Where to insert ball");
+  //set cup selected
+  var cupSelected = prompt();
 
   var move1 = new Move(0,'left');
   var move2 = new Move(1,'left');
