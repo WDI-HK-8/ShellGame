@@ -1,0 +1,28 @@
+{
+  "name": "shellgame",
+  "version": "0.0.0",
+  "homepage": "https://github.com/WDI-HK-8/ShellGame",
+  "authors": [
+    "teelu <terrence.lun@gmail.com>"
+  ],
+  "description": "Follow the ball as it gets shuffled underneath cups",
+  "main": "index.html",
+  "keywords": [
+    "shell",
+    "game",
+    "ball",
+    "wdi",
+    "project"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "bootstrap": "~3.3.5"
+  }
+}
