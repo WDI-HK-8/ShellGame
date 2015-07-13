@@ -1,4 +1,5 @@
 'use strict';
+
 //Game Class
 function Game() {
   //variables
@@ -77,5 +78,6 @@ $(document).ready(function() {
     $('.splash-screen').remove();
   });
 });
+
 
 
