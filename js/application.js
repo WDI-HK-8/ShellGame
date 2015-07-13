@@ -17,36 +17,6 @@ function Game() {
       }
     }
   }
-  
-  //Move constructor
-  function Move(position, direction) {
-    this.position = position;
-    this.direction = direction;
-  }
-
-  function executeMove(move, arr) {
-    var cupMovePosition = move.position;
-    var cupMoveDirection = move.direction;
-    var cupAffectedPosition;
-    var tempArr;
-    if (cupMoveDirection == 'left') {
-      if (cupMovePosition > 0) {
-        cupAffectedPosition = move.position - 1;
-      } else {
-        cupAffectedPosition = 2;
-      }
-    } else if (cupMoveDirection == 'right') {
-      if (cupMovePosition < 2) {
-        cupAffectedPosition = move.position + 1;
-      } else {
-        cupAffectedPosition = 0;
-      }
-    }
-    
-    tempCup = cupArray[cupMovePosition];
-    cupArray[cupMovePosition] = cupArray[cupAffectedPosition];
-    cupArray[cupAffectedPosition] = tempCup;
-  }
 
   this.createCups = function () {
     //generate cups
@@ -56,7 +26,7 @@ function Game() {
   }
 
   //Move constructor
-  this.move = function (position,direction) {
+  this.Move = function (position, direction) {
     this.position = position;
     this.direction = direction;
   }
@@ -87,15 +57,13 @@ function Game() {
     var tempCup = this.cupArray[cupMovePosition];
     tempArr[cupMovePosition] = tempArr[cupAffectedPosition];
     tempArr[cupAffectedPosition] = tempCup;
-
     return tempArr;
   }
 
   this.start = function () {
     console.log("game Started!");
     this.createCups();
-    this.move1 = new this.move(1,'right');
-
+    this.move1 = new this.Move(1,'right');
     console.log(this.cupArray);
     this.cupArray = this.executeMove(this.move1);
   }
