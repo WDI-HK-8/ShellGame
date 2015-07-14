@@ -1,18 +1,22 @@
 'use strict';
 $(document).ready(function() {
   //cup holder(har har har)
-  var cupArray = [];
   //cup functions
 
-  function cup(name, position, hasBall) {
+  function Cup(name, position, hasBall) {
     this.name = name;
     this.position = position;
-    this.hasBall = hasBall;
+    this.hasBall = hasBall || false;
   }
+
   //generate cups
-  for (var i = 0; i < 3; i++) {
-    cupArray.push(new cup("cup" + eval('i+1'), i, false));
-  }
+  // var cupArray = [];
+  // for (var i = 0; i < 3; i++) {
+  //   cupArray.push(new Cup("cup" + eval('i+1'), i));
+  // }
+  var cupArray = [1,1,1].map(function(val, index){ 
+   return new Cup('cup'+(index+1), index)
+  })
   console.log(cupArray);
   //Pick a cup
   console.log("Where to insert ball");
