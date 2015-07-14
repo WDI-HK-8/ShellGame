@@ -7,7 +7,7 @@ function Game() {
   this.cupArray = [];
   this.movesArray = [];
   //cup constructor
-  this.cup = function (name,hasBall) {
+  this.cup = function (name, hasBall) {
     this.name = name || "tempCup";
     this.hasBall = hasBall || false;
   }
@@ -18,7 +18,7 @@ function Game() {
     }
   }
   //Move constructor
-  this.move = function (position,direction) {
+  this.move = function (position, direction) {
     this.position = position;
     this.direction = direction;
   }
