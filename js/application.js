@@ -3,39 +3,27 @@
 function rand(limit) {
   return Math.floor((Math.random()*(limit+1)));
 }
-
 //Game Class
 function Game() {
   //variables
   this.cupArray = [];
   this.movesArray = [];
-
   //cup constructor
   this.Cup = function (name, hasBall) {
     this.name = name || "tempCup";
     this.hasBall = hasBall || false;
-    this.getKeyFromValue = function(value) {
-      for(var keys in this) {
-        if (this[keys]==value) {
-          return this;
-        }
-      }
-    }
   }
-
   this.createCups = function () {
     //generate cups
     for (var i = 0; i < 3; i++) {
       this.cupArray.push(new this.Cup("cup" + eval('i+1'), false));
     }
   }
-
   //Move constructor
   this.Move = function (position, direction) {
     this.position = position;
     this.direction = direction;
   }
-
   //methods
   this.executeMove = function (move) {
     var cupMovePosition = move.position;
@@ -64,7 +52,6 @@ function Game() {
     tempArr[cupAffectedPosition] = tempCup;
     return tempArr;
   }
-
   this.generateComputer = function () {
     for (var i = 0; i < 10; i++) {
       //generate numbers for move
@@ -75,16 +62,14 @@ function Game() {
       this.movesArray.push(new this.Move(randomPosition, randomDirectionString));
     }
   }
-
   this.start = function () {
     console.log("game Started!");
     this.createCups();
-    this.move1 = new this.Move(1,'right');
+    this.move1 = new this.Move(1, 'right');
     console.log(this.cupArray);
     this.cupArray = this.executeMove(this.move1);
   }
 }
-
 $(document).ready(function() {
   var game = new Game();
   $('#game-start').click(function() {
@@ -95,6 +80,4 @@ $(document).ready(function() {
     console.log(game.movesArray);
   });
 });
-
-
 
