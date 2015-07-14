@@ -3,6 +3,7 @@ $(document).ready(function() {
   //cup holder(har har har)
   var cupArray = [];
   //cup functions
+
   function cup(name, position, hasBall) {
     this.name = name;
     this.position = position;
