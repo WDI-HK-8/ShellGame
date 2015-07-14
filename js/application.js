@@ -7,6 +7,7 @@ function Game() {
   //variables
   this.cupArray = [];
   this.movesArray = [];
+  this.startPosition;
 
   //cup constructor
   this.cup = function (name,hasBall) {
@@ -35,6 +36,8 @@ function Game() {
   }
 
   //methods
+  //function that takes a move and executes it and returns
+  //the move generated
   this.executeMove = function (move) {
     var cupMovePosition = move.position;
     var cupMoveDirection = move.direction;
@@ -57,15 +60,17 @@ function Game() {
         cupAffectedPosition = 0;
       }
     }
-    
     tempCup = this.cupArray[cupMovePosition];
     tempArr[cupMovePosition] = tempArr[cupAffectedPosition];
     tempArr[cupAffectedPosition] = tempCup;
-
     return tempArr;
   }
-
+  //generate computer start position and 10 random moves
   this.generateComputer = function () {
+    //generate start position
+    var randomStartPosition = rand(2);
+    this.cupArray[randomStartPosition].hasBall = true;
+    this.startPosition = randomStartPosition;
     for (var i = 0; i < 10; i++) {
       //generate numbers for move
       var randomPosition = rand(2);
@@ -76,28 +81,63 @@ function Game() {
     }
   }
 
-  this.start = function () {
-    console.log("game Started!");
+  //Starts the games, takes a boolean to get which opponent the user chose
+  this.start = function (versusComputerPlayer) {
     this.createCups();
-    this.move1 = new this.move(1,'right');
+    $('button').prop("disabled",true);
+    if (versusComputerPlayer) {
+      this.versusComputer();
+    } else {
+      this.versusPlayer();
+    }
+  }
 
-    console.log(this.cupArray);
-    this.cupArray = this.executeMove(this.move1);
+  //Versus player function 
+  this.versusPlayer = function () {
+    $('.cup').bind('mouseenter',animateUp);
+    $('.cup').bind('mouseleave',animateDown);
+  }
+
+  //versus computer flow
+  this.versusComputer = function () {
+    //generate computer flow
+    this.generateComputer();
+    
+    this.finderFollow();
+  }
+
+  this.finderFollow = function () {
+    //remove the balls inside the cup
+    $('.ball').remove();
+    //Change text on communication
+    $('#communication').html("Click start when ready");
+    $('#game-buttons').html('<button id="start-shuffle" class="btn btn-default">Start</button>')
+    //showing initial position
+    console.log(this.startPosition);
+    console.log($('.cup')[this.startPosition]);
+  }
+  this.animateMoves = function () {
   }
 
 }
+var animateUp = function() {
+  console.log("hover");
+  $(this).children('.cup-overlay').animate({ 
+   left: '+=50', top: '-=50'
+  }, 200)
+}
+var animateDown = function() {
+  $(this).children('.cup-overlay').animate({ 
+    left: '-=50', top: '+=50'
+  }, 200)
+}
 
 $(document).ready(function() {
-
-
   var game = new Game();
-  $('#game-start').click(function() {
-    game.start();
-    console.log(game.cupArray);
-    game.generateComputer();
-    $('.splash-screen').remove();
-    console.log(game.movesArray);
+  $('#game-computer').click(function() {
+    game.start(true);
   });
-
-
+  $('#game-player').click(function() {
+    game.start();
+  });
 });
