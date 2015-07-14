@@ -115,10 +115,22 @@ function Game() {
     //showing initial position
     console.log(this.startPosition);
     console.log($('.cup')[this.startPosition]);
+    $($('.cup')[this.startPosition]).append('<div class="ball"></div>');
+    $($('.cup')[this.startPosition]).children('.cup-overlay').animate({ 
+      left: '+=50', top: '-=50'
+    }, 200);
+    $($('.cup')[this.startPosition]).children('.cup-overlay').addClass('selected');
+
+    $('#start-shuffle').click(function () {
+      $('.selected').animate({ left: '-=50', top: '+=50' }, 200);
+      //unbind event
+      $(this).unbind();
+      //call animateMoves
+    });
   }
   this.animateMoves = function () {
-  }
 
+  }
 }
 var animateUp = function() {
   console.log("hover");
