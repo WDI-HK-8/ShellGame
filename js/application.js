@@ -9,6 +9,7 @@ function Game() {
   this.cupArray = [];
   this.movesArray = [];
   //cup constructor
+
   this.Cup = function (name, hasBall) {
     this.name = name || "tempCup";
     this.hasBall = hasBall || false;
