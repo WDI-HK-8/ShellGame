@@ -10,7 +10,7 @@ function Game() {
   this.startPosition;
 
   //cup constructor
-  this.cup = function (name,hasBall) {
+  this.cup = function (name, hasBall) {
     this.name = name || "tempCup";
     this.hasBall = hasBall || false;
     this.getKeyFromValue = function(value) {
@@ -30,7 +30,7 @@ function Game() {
   }
 
   //Move constructor
-  this.move = function (position,direction) {
+  this.move = function (position, direction) {
     this.position = position;
     this.direction = direction;
   }
@@ -102,8 +102,9 @@ function Game() {
   this.versusComputer = function () {
     //generate computer flow
     this.generateComputer();
-    
     this.finderFollow();
+    this.animateMoves();
+    
   }
 
   this.finderFollow = function () {
@@ -116,19 +117,55 @@ function Game() {
     console.log(this.startPosition);
     console.log($('.cup')[this.startPosition]);
     $($('.cup')[this.startPosition]).append('<div class="ball"></div>');
-    $($('.cup')[this.startPosition]).children('.cup-overlay').animate({ 
-      left: '+=50', top: '-=50'
-    }, 200);
+    // $($('.cup')[this.startPosition]).children('.cup-overlay').animate({ 
+    //   left: '+=50', top: '-=50'
+    // }, 200);
     $($('.cup')[this.startPosition]).children('.cup-overlay').addClass('selected');
 
     $('#start-shuffle').click(function () {
       $('.selected').animate({ left: '-=50', top: '+=50' }, 200);
       //unbind event
       $(this).unbind();
-      //call animateMoves
+      //call animateMoves ( TO BE COMPLETED )
     });
   }
   this.animateMoves = function () {
+    this.movesArray.forEach(function (element) {
+      console.log(element.position + element.direction);
+      var currentCup = element.position;
+      var currentDirection = element.direction;
+      var animateLength = 305;
+      var animateDirection = '-='
+      var reverseDirection = '+='
+      var affectedCup;
+      if (currentDirection == 'left') {
+        if (currentCup > 0) {
+          affectedCup = currentCup - 1;
+        } else {
+          affectedCup = 2;
+          animateLength = 610;
+          animateDirection = '+='
+          reverseDirection = '-='
+        }
+      } else if (currentDirection == 'right') {
+        if (currentCup < 2) {
+          affectedCup = currentCup + 1;
+          animateDirection = '+='
+          reverseDirection = '-='
+        } else {
+          affectedCup = 0;
+          animateLength = 610;
+        }
+      }
+      $('.cup:nth-child(' + eval(currentCup+1) + ')').animate({ left: animateDirection+animateLength}, 1000,
+        complete: function() { $this.removeAttr('style');
+      });
+      //Reverse animation
+      $('.cup:nth-child(' + eval(affectedCup+1) + ')').animate({ left: reverseDirection+animateLength}, 1000,
+        complete: function() { $this.removeAttr('style'); 
+      });
+    });
+
 
   }
 }
