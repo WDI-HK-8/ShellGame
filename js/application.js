@@ -4,9 +4,6 @@ $(document).ready(function() {
   var cupArray = [];
   //cup functions
   function cup(name,position,hasBall) {
-    name = name || "tempCup";
-    position = position || 0;
-    hasBall = hasBall || false;
     this.name = name;
     this.position = position;
     this.hasBall = hasBall;
