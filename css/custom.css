@@ -9,11 +9,11 @@
 }
 
 body {
-  background-color: #bdc3c7;
+  background-color: #FDD476;
 }
 
 h1 {
-  font-size: 10em;
+  font-size: 8em;
 }
 
 h3 {
@@ -30,6 +30,7 @@ h3 {
 .container-fluid {
   margin:auto;
   min-width: 800px;
+
 }
 
 #game-screen {
@@ -57,11 +58,12 @@ h3 {
   margin-top: 40px;
   margin-left: 65px;
   max-width: 25px;
-  min-height: 25px;
+  min-height: 15px;
   background-color: blue;
   position: relative;
   z-index: 1;
   border-radius: 20px;
+  border:1px solid black;
 }
 
 .cup-overlay {
@@ -85,9 +87,23 @@ h3 {
   margin: 50px;
 }
 
-#scoreboard {
-  background-color:black;
+.scoreboard {
+  background-color:#96D2ED;
   min-height:1000px;
-  color:white;
-  /*overflow:hidden;*/
+  color:black;
+  border: 1px solid black;
+}
+
+/*MEDIA QUERIES*/
+@media only screen and (max-width : 1200px) {
+  .scoreboard {
+    min-height:100px;
+    margin:0;
+  }
+  .scoreboard h3 {
+    margin:0;
+  }
+  #game-screen {
+    margin-left:120px;
+  }
 }
