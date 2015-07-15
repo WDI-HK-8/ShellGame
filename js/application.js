@@ -170,10 +170,16 @@ var findBall = function (ballLocatedAt) {
     if (clickedIndex === ballLocatedAt) {
       $('#communication').html('YOU WIN')
       finderScore++;
+      //increase difficulty
+      speed *= 0.8
     } else {
       $('#communication').html('YOU LOSE')
       swindlerScore++;
+      //default speed when lose
+      speed = 600
     }
+    //update score
+    updateScoreboard();
     //create reset button
     $('#game-buttons').html('<button id="reset-game" class="btn btn-danger btn-lg">Reset</button>');
   });
@@ -293,10 +299,19 @@ var resetGame = function () {
   return resetGame
 }
 
+//SCOREBOARD
+var updateScoreboard = function () {
+  //update finder scoreboard
+  $('#scoreboard-finder > .score').text(finderScore);
+  //update swindler scoreboard
+  $('#scoreboard-swindler > .score').text(swindlerScore);
+}
+
 //Instantiating new game
 var game = new Game();
 
 $(document).ready(function() {
+  updateScoreboard();
   $(document).on('click', '#reset-game', function () {
     game = resetGame();
   });
