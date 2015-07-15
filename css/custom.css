@@ -1,43 +1,89 @@
-.container {
-	margin:auto;
-	min-width:1000px;
+@font-face {
+    font-family: comicfont;
+    src: url(../assets/fonts/BADABB__.TTF);
+}
+
+@font-face {
+    font-family: button-comic-font;
+    src: url(../assets/fonts/ObelixPro-Broken-cyr.ttf);
+}
+
+body {
+  background-color: #bdc3c7;
+  overflow:hidden;
+}
+
+h1 {
+  font-size: 10em;
+}
+
+h3 {
+  font-size: 2em;
+}
+
+.title {
+  font-family: comicfont, Helvetica;
+}
+
+#communication { 
+  font-family: button-comic-font;
+}
+.container-fluid {
+  margin:auto;
+  min-width: 800px;
 }
 
 #game-screen {
-	margin-left:100px;
+  margin-left: 40px;
+  background-color: rgba(0,0,0,0.4);
+  display: inline-block;
+  border-radius: 15px;
 }
 
-
 .cup {
-	min-width: 100px;
-	min-height: 100px;
-	position:relative;
-	display:inline-block;
-	margin:100px;
+  min-width: 90px;
+  min-height: 90px;
+  position: relative;
+  display: inline-block;
+  margin: 100px;
+
+}
+
+.cup:last-child {
+  margin-right: 160px;
 }
 
 .ball {
-	margin-top:50px;
-	max-width:10px;
-	min-height:10px;
-	background-color:blue;
-	position:relative;
-	z-index:1;
+  margin-top: 40px;
+  margin-left: 65px;
+  max-width: 25px;
+  min-height: 25px;
+  background-color: blue;
+  position: relative;
+  z-index: 1;
+  border-radius: 20px;
 }
 
 .cup-overlay {
-	min-width: 100px;
-	min-height: 100px;
-	background-color:red;
-	position:absolute;
-	float:left;
-	z-index:2;
-	top:0;
-	left:0;
-	border: 2px solid black;
+  min-width: 150px;
+  min-height: 150px;
+  background-color: red;
+  position: absolute;
+  float: left;
+  z-index: 2;
+  top: 0;
+  left: 0;
+  background: url("../assets/img/shell.png");
 }
 
 #game-buttons button {
-	min-width:100px;
-	margin:50px;
+  min-width: 150px;
+  margin: 50px;
+}
+
+#scoreboard {
+  background-color:black;
+  min-height:1000px;
+  color:white;
+  /*overflow:hidden;*/
 }
