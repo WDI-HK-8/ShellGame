@@ -1,88 +1,96 @@
 'use strict';
 
-function rand(limit) {
+var rand = function(limit) {
   return Math.floor((Math.random()*(limit+1)));
 }
 
-//Game Class
+//------------------------------------------------------------
+// CUP Class
+//------------------------------------------------------------
+function Cup(name, hasBall) {
+  this.name    = name    || "tempCup";
+  this.hasBall = hasBall || false;
+}
+
+//------------------------------------------------------------
+// MOVE Class
+//------------------------------------------------------------
+function Move (position, direction) {
+  this.position  = position;
+  this.direction = direction;
+}
+
+//------------------------------------------------------------
+// GAME Class
+//------------------------------------------------------------
 function Game() {
-  //variables
-  this.cupArray = [];
+  this.numCups    = 3;
+  this.cupArray   = [];
   this.movesArray = [];
-  //cup constructor
-  this.Cup = function (name, hasBall) {
-    this.name = name || "tempCup";
-    this.hasBall = hasBall || false;
+}
+
+Game.prototype.createCups = function () {
+  for (var i=0; i < this.numCups; i++) {
+    this.cupArray.push(new Cup("cup" + (i+1)));
   }
-  this.createCups = function () {
-    //generate cups
-    for (var i = 0; i < 3; i++) {
-      this.cupArray.push(new this.Cup("cup" + eval('i+1'), false));
-    }
+  console.log('Cups created:', this.cupArray)
+}
+
+Game.prototype.cloneCups = function (){
+  var newCupArray = [];
+
+  this.cupArray.forEach(function(cup){
+    newCupArray.push(cup);
+  })
+
+  return newCupArray;
+}
+
+Game.prototype.executeMove = function (move) {
+  var newPosition;
+  var newCupArray = this.cloneCups();
+
+  switch (move.direction) {
+    case 'left':
+      if (move.position > 0) { newPosition = move.position - 1; }
+      else {                   newPosition = 2; }
+      break;
+    case 'right':
+      if (move.position < 2) { newPosition = move.position + 1; }
+      else {                   newPosition = 0; }
+      break;
   }
 
-  //Move constructor
-  this.Move = function (position, direction) {
-    this.position = position;
-    this.direction = direction;
-  }
+  var tempCup = this.cupArray[move.position];
+  newCupArray[move.position] = newCupArray[newPosition];
+  newCupArray[newPosition]   = tempCup;
 
-  //methods
-  this.executeMove = function (move) {
-    var cupMovePosition = move.position;
-    var cupMoveDirection = move.direction;
-    var cupAffectedPosition;
-    var tempArr = [];
-    //deep copy cupArray
-    for (var i = 0; i < this.cupArray.length; i++) {
-      tempArr.push(this.cupArray[i]);
-    }
-    if (cupMoveDirection == 'left') {
-      if (cupMovePosition > 0) {
-        cupAffectedPosition = move.position - 1;
-      } else {
-        cupAffectedPosition = 2;
-      }
-    } else if (cupMoveDirection == 'right') {
-      if (cupMovePosition < 2) {
-        cupAffectedPosition = move.position + 1;
-      } else {
-        cupAffectedPosition = 0;
-      }
-    }  
-    var tempCup = this.cupArray[cupMovePosition];
-    tempArr[cupMovePosition] = tempArr[cupAffectedPosition];
-    tempArr[cupAffectedPosition] = tempCup;
-    return tempArr;
-  }
+  return newCupArray;
+}
 
-  this.generateComputer = function () {
-    for (var i = 0; i < 10; i++) {
-      //generate numbers for move
-      var randomPosition = rand(2);
-      var randomDirection = rand(1);
-      var randomDirectionString
-      randomDirection===0 ? randomDirectionString = 'left' : randomDirectionString = 'right';
-      this.movesArray.push(new this.Move(randomPosition, randomDirectionString));
-    }
-  }
+Game.prototype.generateComputer = function (numMoves) {
+  var numMoves = numMoves || 10;
+  var direction;
 
-  this.start = function () {
-    console.log("game Started!");
-    this.createCups();
-    this.move1 = new this.Move(1, 'right');
-    console.log(this.cupArray);
-    this.cupArray = this.executeMove(this.move1);
+  for (var i=0; i < numMoves; i++) {
+    rand(1) === 0 ? direction = 'left' : direction = 'right';
+    this.movesArray.push(new Move(rand(2), direction));
   }
 }
 
+Game.prototype.start = function () {
+  console.log("Game Started!");
+  this.createCups();
+  this.cupArray = this.executeMove(new Move(1, 'right'));
+}
+
+var game = new Game();
+
 $(document).ready(function() {
-  var game = new Game();
+
   $('#game-start').click(function() {
     game.start();
-    console.log(game.cupArray);
-    game.generateComputer();
+    game.generateComputer(10);
     $('.splash-screen').remove();
-    console.log(game.movesArray);
   });
 });
