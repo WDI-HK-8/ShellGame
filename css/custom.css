@@ -1,43 +1,43 @@
 .container {
-	margin:auto;
-	min-width:1000px;
+  margin:auto;
+  min-width:1000px;
 }
 
 #game-screen {
-	margin-left:100px;
+  margin-left:100px;
 }
 
 
 .cup {
-	min-width: 100px;
-	min-height: 100px;
-	position:relative;
-	display:inline-block;
-	margin:100px;
+  min-width: 100px;
+  min-height: 100px;
+  position:relative;
+  display:inline-block;
+  margin:100px;
 }
 
 .ball {
-	margin-top:50px;
-	max-width:10px;
-	min-height:10px;
-	background-color:blue;
-	position:relative;
-	z-index:1;
+  margin-top:50px;
+  max-width:10px;
+  min-height:10px;
+  background-color:blue;
+  position:relative;
+  z-index:1;
 }
 
 .cup-overlay {
-	min-width: 100px;
-	min-height: 100px;
-	background-color:red;
-	position:absolute;
-	float:left;
-	z-index:2;
-	top:0;
-	left:0;
-	border: 2px solid black;
+  min-width: 100px;
+  min-height: 100px;
+  background-color:red;
+  position:absolute;
+  float:left;
+  z-index:2;
+  top:0;
+  left:0;
+  border: 2px solid black;
 }
 
 #game-buttons button {
-	min-width:100px;
-	margin:50px;
+  min-width:100px;
+  margin:50px;
 }
