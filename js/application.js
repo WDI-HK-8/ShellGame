@@ -86,4 +86,3 @@ $(document).ready(function() {
     console.log(game.movesArray);
   });
 });
-
