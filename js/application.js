@@ -1,3 +1,8 @@
+'use strict';
+//Global Variables
+var speed = 600;
+
+//Random Function
 function rand(limit) {
   return Math.floor((Math.random()*(limit+1)));
 }
@@ -14,11 +19,121 @@ var Move = function (position, direction) {
   this.direction = direction;
 }
 
-//Versus player function 
-var versusPlayer = function () {
-  $('.cup').bind('mouseenter',animateUp);
-  $('.cup').bind('mouseleave',animateDown);
+var executeMove = function (move, arr) {
+  var cupMovePosition = move.position;
+  var cupMoveDirection = move.direction;
+  var cupAffectedPosition;
+  var tempArr = [];
+  //deep copy cupArray
+  for (var i = 0; i < arr.length; i++) {
+    tempArr.push(arr[i]);
+  }
+  if (cupMoveDirection == 'left') {
+    if (cupMovePosition > 0) {
+      cupAffectedPosition = move.position - 1;
+    } else {
+      cupAffectedPosition = 2;
+    }
+  } else if (cupMoveDirection == 'right') {
+    if (cupMovePosition < 2) {
+      cupAffectedPosition = move.position + 1;
+    } else {
+      cupAffectedPosition = 0;
+    }
+  }
+  var tempCup = arr[cupMovePosition];
+  tempArr[cupMovePosition] = tempArr[cupAffectedPosition];
+  tempArr[cupAffectedPosition] = tempCup;
+  return tempArr;
 }
+
+var animateMovesArray = function (arr) {
+  $('#communication').html('Shuffling the cups!');
+  var countdown=0;
+  var timer = setInterval(function() {
+    animateMove(arr[countdown]);
+    countdown++;
+    if (countdown > arr.length-1) {
+      clearInterval(timer);
+    }
+  },speed);
+};
+
+var animateMove = function (move) {
+  var movePosition = move.position;
+  var moveDirection = move.direction;
+  var animateLength = 305;
+  var direction;
+  var reverse;
+  var affectedCup;
+  if (moveDirection == 'left') {
+    if (movePosition === 0) {
+      affectedCup = 2;
+      direction = '+='
+      animateLength = animateLength * 2;
+    } else {
+      affectedCup = movePosition - 1;
+      direction = '-=';
+    }
+  } else if (moveDirection == 'right') {
+    if (movePosition == 2) {
+      affectedCup = 0;
+      direction = '-='
+      animateLength = animateLength * 2;
+    } else {
+      affectedCup = movePosition + 1;
+      direction = '+=';
+    }
+  }
+
+  direction=='-=' ? reverse = '+=' : reverse = '-=';
+
+  $('.cup:nth-child(' + eval(movePosition + 1) + ')').animate({
+    left: direction+animateLength
+  },speed, function () {
+    $(this).removeAttr('style');
+  });
+  $('.cup:nth-child(' + eval(affectedCup + 1) + ')').animate({
+    left: reverse+animateLength
+  },speed, function () {
+    $(this).removeAttr('style');
+  });
+}
+
+var placeBall = function (cupArray) {
+  var ballLocatedAt;
+  cupArray.forEach(function(element, index) {
+    //check element for has ball
+    $(this).removeClass('selected');
+    if (element.hasBall) {
+      ballLocatedAt = index;
+    }
+  });
+  //Remove any current balls placed
+  $('.ball').remove();
+  //place ball into cup
+  $('.cup:nth-child(' + eval(ballLocatedAt+1) + ')').append('<div class="ball"></div>');
+  return ballLocatedAt;
+}
+
+var findBall = function (ballLocatedAt) {
+  //Change Instruction
+  $('#communication').html('Find the Ball!');
+  //bind event
+  $('.cup').click(function () {
+    $(this).children('.cup-overlay').animate({ 
+      left: '+=50', top: '-=50'
+    }, 200);
+    $('.cup').unbind();
+    var clickedIndex = $(this).index();
+    if (clickedIndex === ballLocatedAt) {
+      $('#communication').html('YOU WIN')
+    } else {
+      $('#communication').html('YOU LOSE')
+    }
+  });
+}
+
 
 //Game Class
 function Game() {
@@ -98,96 +213,20 @@ function Game() {
       //unbind event
       $(this).unbind();
       //call animateMoves
-      animateMoves(movesArray);
-      placeBall(cupArray);
-      findBall();
+      animateMovesArray(movesArray);
+      var ballLocatedAt = placeBall(cupArray);
+      findBall(ballLocatedAt);
     });
   }
 }
 
-var executeMove = function (move, arr) {
-  var cupMovePosition = move.position;
-  var cupMoveDirection = move.direction;
-  var cupAffectedPosition;
-  var tempArr = [];
-  //deep copy cupArray
-  for (var i = 0; i < arr.length; i++) {
-    tempArr.push(arr[i]);
-  }
-  if (cupMoveDirection == 'left') {
-    if (cupMovePosition > 0) {
-      cupAffectedPosition = move.position - 1;
-    } else {
-      cupAffectedPosition = 2;
-    }
-  } else if (cupMoveDirection == 'right') {
-    if (cupMovePosition < 2) {
-      cupAffectedPosition = move.position + 1;
-    } else {
-      cupAffectedPosition = 0;
-    }
-  }
-  var tempCup = arr[cupMovePosition];
-  tempArr[cupMovePosition] = tempArr[cupAffectedPosition];
-  tempArr[cupAffectedPosition] = tempCup;
-  return tempArr;
-}
-
-var animateMoves = function (arr) {
-  var countdown=0;
-  var timer = setInterval(function() {
-    
-    animate(arr[countdown]);
-    countdown++;
-    if (countdown > 9) {
-      clearInterval(timer);
-    }
-  },600);
-};
-
-var animate = function (move) {
-  var movePosition = move.position;
-  var moveDirection = move.direction;
-  var animateLength = 305;
-  var direction;
-  var reverse;
-  var affectedCup;
-  if (moveDirection == 'left') {
-    if (movePosition === 0) {
-      affectedCup = 2;
-      direction = '+='
-      animateLength = animateLength * 2;
-    } else {
-      affectedCup = movePosition - 1;
-      direction = '-=';
-    }
-  } else if (moveDirection == 'right') {
-    if (movePosition == 2) {
-      affectedCup = 0;
-      direction = '-='
-      animateLength = animateLength * 2;
-    } else {
-      affectedCup = movePosition + 1;
-      direction = '+=';
-    }
-  }
-
-  direction=='-=' ? reverse = '+=' : reverse = '-=';
-
-  $('.cup:nth-child(' + eval(movePosition + 1) + ')').animate({
-    left: direction+animateLength
-  },600, function () {
-    $(this).removeAttr('style');
-  });
-  $('.cup:nth-child(' + eval(affectedCup + 1) + ')').animate({
-    left: reverse+animateLength
-  },600, function () {
-    $(this).removeAttr('style');
-  });
+//Versus player function 
+var versusPlayer = function () {
+  $('.cup').bind('mouseenter',animateUp);
+  $('.cup').bind('mouseleave',animateDown);
 }
 
 var animateUp = function () {
-  console.log("hover");
   $(this).children('.cup-overlay').animate({ 
    left: '+=50', top: '-=50'
   }, 200)
@@ -199,25 +238,6 @@ var animateDown = function () {
   }, 200)
 }
 
-var findBall = function () {
-}
-
-var placeBall = function (cupArray) {
-  var ballLocatedAt;
-  cupArray.forEach(function(element, index) {
-    //check element for has ball
-    $(this).removeClass('selected');
-    if (element.hasBall) {
-      ballLocatedAt = index;
-    }
-  });
-  //Remove any current balls placed
-  $('.ball').remove();
-  //place ball into cup
-  console.log($('.cup:nth-child(' + eval(ballLocatedAt+1) + ')').html());
-
-
-}
 
 $(document).ready(function() {
   var game = new Game();
