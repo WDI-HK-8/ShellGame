@@ -1,8 +1,9 @@
 'use strict';
 //Global Variables
 //controls the speed of the shuffling in ms (Higher = slower)
-var speed = 300;
-var playerOneScore = 0;
+var speed = 500;
+var finderScore = 0;
+var swindlerScore = 0;
 
 //Random Function
 var rand = function (limit) {
@@ -82,7 +83,7 @@ var animateMovesArray = function (arr) {
 var animateMove = function (move) {
   var movePosition = move.position;
   var moveDirection = move.direction;
-  var animateLength = 295;
+  var animateLength = 265;
   var direction;
   var reverse;
   var affectedCup;
@@ -168,12 +169,13 @@ var findBall = function (ballLocatedAt) {
     var clickedIndex = $(this).index();
     if (clickedIndex === ballLocatedAt) {
       $('#communication').html('YOU WIN')
-      playerOneScore++;
+      finderScore++;
     } else {
       $('#communication').html('YOU LOSE')
+      swindlerScore++;
     }
     //create reset button
-    $('#game-buttons').html('<button class="btn btn-danger btn-lg">Reset</button>');
+    $('#game-buttons').html('<button id="reset-game" class="btn btn-danger btn-lg">Reset</button>');
   });
 }
 
@@ -213,12 +215,11 @@ function Game() {
   }
 
 //------------------------------------------------------------
-// GAME Class
+// GAME FUNCTIONS
 //------------------------------------------------------------
   //Starts the games, takes a boolean to get which opponent the user chose
   Game.prototype.start = function (versusComputerPlayer) {
     this.createCups();
-    $('button').prop("disabled",true);
     if (versusComputerPlayer) {
       this.versusComputer();
     } else {
@@ -228,7 +229,8 @@ function Game() {
 
   //versus computer flow
   Game.prototype.versusComputer = function () {
-    var computerMoves = prompt("How many moves should the Computer Do?");
+    var computerMoves = prompt("How many moves should the Computer Do?") || 10;
+
     //generate computer flow
     this.generateComputer(computerMoves);
     this.finderFollow();
@@ -278,14 +280,31 @@ var versusPlayer = function () {
   $('.cup').bind('mouseleave',animateDown);
 }
 
+//RESET
+var resetGame = function () {
+  var resetGame = new Game();
+  //remove styles on cups
+  $(".cup-overlay").removeAttr("style");
+  $(".cup-overlay").removeClass("selected");
+  //generate buttons
+  $('#game-buttons').html('<button class="btn btn-primary btn-lg" id="game-player">Player</button> <button class="btn btn-danger btn-lg" id="game-computer">Computer</button>')
+  //change communication
+  $('#communication').text('Choose an opponent')
+  return resetGame
+}
+
 //Instantiating new game
 var game = new Game();
 
 $(document).ready(function() {
-  $('#game-computer').click(function() {
+  $(document).on('click', '#reset-game', function () {
+    game = resetGame();
+  });
+
+  $(document).on('click', '#game-computer', function () {
     game.start(true);
   });
-  $('#game-player').click(function() {
+  $(document).on('click', '#game-player', function () {
     game.start();
   });
 });
