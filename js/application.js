@@ -1,45 +1,53 @@
 'use strict';
 //Global Variables
+//controls the speed of the shuffling in ms (Higher = slower)
 var speed = 600;
 
 //Random Function
-function rand(limit) {
+var rand = function (limit) {
   return Math.floor((Math.random()*(limit+1)));
 }
 
-//cup constructor
+//------------------------------------------------------------
+// CUP Class
+//------------------------------------------------------------
 var Cup = function (name, hasBall) {
   this.name = name || "tempCup";
   this.hasBall = hasBall || false;
 }
 
-//Move constructor
+//------------------------------------------------------------
+// Move Class
+//------------------------------------------------------------
 var Move = function (position, direction) {
   this.position = position;
   this.direction = direction;
 }
 
+//------------------------------------------------------------
+// Execute Move Function
+//------------------------------------------------------------
 var executeMove = function (move, arr) {
   var cupMovePosition = move.position;
   var cupMoveDirection = move.direction;
   var cupAffectedPosition;
   var tempArr = [];
-  //deep copy cupArray
-  for (var i = 0; i < arr.length; i++) {
-    tempArr.push(arr[i]);
-  }
-  if (cupMoveDirection == 'left') {
-    if (cupMovePosition > 0) {
-      cupAffectedPosition = move.position - 1;
-    } else {
-      cupAffectedPosition = 2;
-    }
-  } else if (cupMoveDirection == 'right') {
-    if (cupMovePosition < 2) {
-      cupAffectedPosition = move.position + 1;
-    } else {
-      cupAffectedPosition = 0;
-    }
+  tempArr = cloneCups(arr);
+  switch (cupMoveDirection) {
+    case 'left': 
+      if (cupMovePosition > 0) {
+        cupAffectedPosition = move.position - 1;
+      } else {
+        cupAffectedPosition = 2;
+      }
+      break;
+    case 'right': 
+      if (cupMovePosition < 2) {
+        cupAffectedPosition = move.position + 1;
+      } else {
+        cupAffectedPosition = 0;
+      }
+      break;
   }
   var tempCup = arr[cupMovePosition];
   tempArr[cupMovePosition] = tempArr[cupAffectedPosition];
@@ -47,6 +55,17 @@ var executeMove = function (move, arr) {
   return tempArr;
 }
 
+var cloneCups = function (arr) {
+  var newCupArray = [];
+  arr.forEach(function (element) {
+    newCupArray.push(element);
+  })
+  return newCupArray;
+}
+
+//------------------------------------------------------------
+// Animations
+//------------------------------------------------------------
 var animateMovesArray = function (arr) {
   $('#communication').html('Shuffling the cups!');
   var countdown=0;
@@ -66,24 +85,27 @@ var animateMove = function (move) {
   var direction;
   var reverse;
   var affectedCup;
-  if (moveDirection == 'left') {
-    if (movePosition === 0) {
-      affectedCup = 2;
-      direction = '+='
-      animateLength = animateLength * 2;
-    } else {
-      affectedCup = movePosition - 1;
-      direction = '-=';
-    }
-  } else if (moveDirection == 'right') {
-    if (movePosition == 2) {
-      affectedCup = 0;
-      direction = '-='
-      animateLength = animateLength * 2;
-    } else {
-      affectedCup = movePosition + 1;
-      direction = '+=';
-    }
+  switch (moveDirection) {
+    case 'left':
+      if (movePosition === 0) {
+        affectedCup = 2;
+        direction = '+='
+        animateLength = animateLength * 2;
+      } else {
+        affectedCup = movePosition - 1;
+        direction = '-=';
+      }
+      break;
+    case 'right': 
+      if (movePosition == 2) {
+        affectedCup = 0;
+        direction = '-='
+        animateLength = animateLength * 2;
+      } else {
+        affectedCup = movePosition + 1;
+        direction = '+=';
+      }
+      break;
   }
 
   direction=='-=' ? reverse = '+=' : reverse = '-=';
@@ -100,6 +122,21 @@ var animateMove = function (move) {
   });
 }
 
+var animateUp = function () {
+  $(this).children('.cup-overlay').animate({ 
+   left: '+=50', top: '-=50'
+  }, 200)
+}
+
+var animateDown = function () {
+  $(this).children('.cup-overlay').animate({ 
+    left: '-=50', top: '+=50'
+  }, 200)
+}
+
+//------------------------------------------------------------
+// Ball Functions
+//------------------------------------------------------------
 var placeBall = function (cupArray) {
   var ballLocatedAt;
   cupArray.forEach(function(element, index) {
@@ -134,28 +171,32 @@ var findBall = function (ballLocatedAt) {
   });
 }
 
-
-//Game Class
+//------------------------------------------------------------
+// GAME Class
+//------------------------------------------------------------
 function Game() {
   //variables
   this.cupArray = [];
   this.movesArray = [];
+  this.numberOfCups = 3;
   this.startPosition;
 
-  this.createCups = function () {
+  Game.prototype.createCups = function () {
     //generate cups
-    for (var i = 0; i < 3; i++) {
+    for (var i = 0; i < this.numberOfCups; i++) {
       this.cupArray.push(new Cup("cup" + eval('i+1'),false));
     }
+    console.log("Cup Array:" + this.cupArray);
   }
 
-  //generate computer start position and 10 random moves
-  this.generateComputer = function () {
+  //generate computer start position and x random moves
+  Game.prototype.generateComputer = function (numberOfMoves) {
     //generate start position
     var randomStartPosition = rand(2);
+    console.log(randomStartPosition);
     this.cupArray[randomStartPosition].hasBall = true;
     this.startPosition = randomStartPosition;
-    for (var i = 0; i < 10; i++) {
+    for (var i = 0; i < numberOfMoves; i++) {
       //generate numbers for move
       var randomPosition = rand(2);
       var randomDirection = rand(1);
@@ -165,8 +206,11 @@ function Game() {
     }
   }
 
+//------------------------------------------------------------
+// GAME Class
+//------------------------------------------------------------
   //Starts the games, takes a boolean to get which opponent the user chose
-  this.start = function (versusComputerPlayer) {
+  Game.prototype.start = function (versusComputerPlayer) {
     this.createCups();
     $('button').prop("disabled",true);
     if (versusComputerPlayer) {
@@ -177,13 +221,14 @@ function Game() {
   }
 
   //versus computer flow
-  this.versusComputer = function () {
+  Game.prototype.versusComputer = function () {
+    var computerMoves = prompt("How many moves should the Computer Do?");
     //generate computer flow
-    this.generateComputer();
+    this.generateComputer(computerMoves);
     this.finderFollow();
   }
 
-  this.finderFollow = function () {
+  Game.prototype.finderFollow = function () {
     //Grab arrays to ensure scope
      var movesArray = this.movesArray;
      var cupArray = this.cupArray;
@@ -213,6 +258,7 @@ function Game() {
       //unbind event
       $(this).unbind();
       //call animateMoves
+      console.log(movesArray);
       animateMovesArray(movesArray);
       var ballLocatedAt = placeBall(cupArray);
       findBall(ballLocatedAt);
@@ -226,21 +272,11 @@ var versusPlayer = function () {
   $('.cup').bind('mouseleave',animateDown);
 }
 
-var animateUp = function () {
-  $(this).children('.cup-overlay').animate({ 
-   left: '+=50', top: '-=50'
-  }, 200)
-}
 
-var animateDown = function () {
-  $(this).children('.cup-overlay').animate({ 
-    left: '-=50', top: '+=50'
-  }, 200)
-}
-
+//Instantiating new game
+var game = new Game();
 
 $(document).ready(function() {
-  var game = new Game();
   $('#game-computer').click(function() {
     game.start(true);
   });
