@@ -1,7 +1,12 @@
 'use strict';
 //Global Variables
 //controls the speed of the shuffling in ms (Higher = slower)
-var speed = 600;
+var speed = 500;
+var playerLimit = 5;
+var finderScore = 0;
+var swindlerScore = 0;
+var versusPlayerColor = "#70A53B";
+var finderColor = "#FDD476"
 
 //Random Function
 var rand = function (limit) {
@@ -63,6 +68,7 @@ var cloneCups = function (arr) {
   return newCupArray;
 }
 
+
 //------------------------------------------------------------
 // Animations
 //------------------------------------------------------------
@@ -81,7 +87,7 @@ var animateMovesArray = function (arr) {
 var animateMove = function (move) {
   var movePosition = move.position;
   var moveDirection = move.direction;
-  var animateLength = 305;
+  var animateLength = 265;
   var direction;
   var reverse;
   var affectedCup;
@@ -124,13 +130,13 @@ var animateMove = function (move) {
 
 var animateUp = function () {
   $(this).children('.cup-overlay').animate({ 
-   left: '+=50', top: '-=50'
+   left: '+=60', top: '-=60'
   }, 200)
 }
 
 var animateDown = function () {
   $(this).children('.cup-overlay').animate({ 
-    left: '-=50', top: '+=50'
+    left: '-=60', top: '+=60'
   }, 200)
 }
 
@@ -149,25 +155,37 @@ var placeBall = function (cupArray) {
   //Remove any current balls placed
   $('.ball').remove();
   //place ball into cup
-  $('.cup:nth-child(' + eval(ballLocatedAt+1) + ')').append('<div class="ball"></div>');
+  $('.cup:nth-child(' + eval(ballLocatedAt+1) + ')').append('<div class="ball"></div>'); 
   return ballLocatedAt;
 }
 
 var findBall = function (ballLocatedAt) {
   //Change Instruction
-  $('#communication').html('Find the Ball!');
+  $('#communication').html('Click on a shell and find the Ball!');
+  //remove buttons
+  $('#game-buttons button').remove();
   //bind event
   $('.cup').click(function () {
     $(this).children('.cup-overlay').animate({ 
-      left: '+=50', top: '-=50'
+      left: '+=60', top: '-=60'
     }, 200);
     $('.cup').unbind();
     var clickedIndex = $(this).index();
     if (clickedIndex === ballLocatedAt) {
-      $('#communication').html('YOU WIN')
+      $('#communication').html('FINDER WIN')
+      finderScore++;
+      //increase difficulty
+      speed *= 0.8
     } else {
-      $('#communication').html('YOU LOSE')
+      $('#communication').html('SWINDLER WIN')
+      swindlerScore++;
+      //default speed when lose
+      speed = 600
     }
+    //update score
+    updateScoreboard();
+    //create reset button
+    $('#game-buttons').html('<button id="reset-game" class="btn btn-danger btn-lg">Play Again</button>');
   });
 }
 
@@ -207,12 +225,11 @@ function Game() {
   }
 
 //------------------------------------------------------------
-// GAME Class
+// GAME FUNCTIONS
 //------------------------------------------------------------
   //Starts the games, takes a boolean to get which opponent the user chose
   Game.prototype.start = function (versusComputerPlayer) {
     this.createCups();
-    $('button').prop("disabled",true);
     if (versusComputerPlayer) {
       this.versusComputer();
     } else {
@@ -222,65 +239,144 @@ function Game() {
 
   //versus computer flow
   Game.prototype.versusComputer = function () {
-    var computerMoves = prompt("How many moves should the Computer Do?");
+    var computerMoves = prompt("How many moves should the Computer Do?") || 10;
+
     //generate computer flow
     this.generateComputer(computerMoves);
     this.finderFollow();
   }
 
   Game.prototype.finderFollow = function () {
+    var cupArray = this.cupArray;
+    //Indicate Player change if needed
+    $('body').css({ "background-color": finderColor});
     //Grab arrays to ensure scope
-     var movesArray = this.movesArray;
-     var cupArray = this.cupArray;
+    var movesArray = this.movesArray;
     //remove the balls inside the cup
     $('.ball').remove();
     //Change text on communication
     $('#communication').html("Click start when ready");
-    $('#game-buttons').html('<button id="start-shuffle" class="btn btn-default">Start</button>')
+    $('#game-buttons').html('<button id="start-shuffle" class="btn btn-success btn-lg">Start</button>')
     //showing initial position
-    console.log(this.startPosition);
     console.log($('.cup')[this.startPosition]);
     $($('.cup')[this.startPosition]).append('<div class="ball"></div>');
     $($('.cup')[this.startPosition]).children('.cup-overlay').animate({ 
-      left: '+=50', top: '-=50'
+      left: '+=60', top: '-=60'
     }, 200);
     $($('.cup')[this.startPosition]).children('.cup-overlay').addClass('selected');
-
     //actually execute moves
     for (var i = 0; i < movesArray.length; i++) {
-      cupArray = executeMove(movesArray[i], cupArray);
+      this.cupArray = executeMove(movesArray[i], this.cupArray);
     }
-
-    console.log(cupArray);
-
-    $('#start-shuffle').click(function () {
-      $('.selected').animate({ left: '-=50', top: '+=50' }, 200);
-      //unbind event
-      $(this).unbind();
-      //call animateMoves
-      console.log(movesArray);
-      animateMovesArray(movesArray);
-      var ballLocatedAt = placeBall(cupArray);
-      findBall(ballLocatedAt);
+  }
+  
+  //Versus player function 
+  Game.prototype.versusPlayer = function () {
+    //Change color
+    $('body').css({ "background-color": versusPlayerColor});
+    var startPosition
+    //Bind hover event
+    $('.cup').bind('mouseenter',animateUp);
+    $('.cup').bind('mouseleave',animateDown);
+    //create click event
+    $('.cup').click(function () {
+      $(this).children('.cup-overlay').animate({ left: '-=60', top: '+=60' }, 200);
+      //unbind event from all cups
+      $('.cup').unbind();
+      game.startPosition = $(this).index();
+      game.cupArray[game.startPosition].hasBall = true;
+      //Create buttons
+      $('#create-buttons').slideDown()
+      //Change communication
+      $('#communication').text('Click on an arrow to shuffle a cup!');
     });
+    //Change communication
+    $('#communication').text('Click on a shell to hide the ball!');
+    //
+  }
+
+  Game.prototype.recordPlayerMove = function () {
+    //remove buttons
+    $('#game-buttons button').remove();
+    var move;
+    var direction;
+    move = $(this).parent().index();
+    direction = $(this).index();
+    switch (direction) {
+      case 0:
+        direction = "left";
+        break;
+      case 1:
+        direction = "right";
+        break;
+    }
+    var newMove = new Move(move, direction);
+    console.log(move, direction);
+    animateMove(newMove);
+    //generate next button
+    $('#game-buttons').html('<button class="btn btn-success btn-lg" id="record-complete">Finished Shuffling</button>');
+    game.pushMove(newMove);
+  }
+
+  Game.prototype.pushMove = function (move) {
+    this.movesArray.push(move);
+    console.log(this.movesArray);
   }
 }
 
-//Versus player function 
-var versusPlayer = function () {
-  $('.cup').bind('mouseenter',animateUp);
-  $('.cup').bind('mouseleave',animateDown);
+//------------------------------------------------------------
+// RESET
+//------------------------------------------------------------
+var resetGame = function () {
+  var resetGame = new Game();
+  //remove styles on cups
+  $(".cup-overlay").removeAttr("style");
+  $(".cup-overlay").removeClass("selected");
+  //generate buttons
+  $('#game-buttons').html('<button class="btn btn-primary btn-lg" id="game-player">Player</button> <button class="btn btn-danger btn-lg" id="game-computer">Computer</button>')
+  //change communication
+  $('#communication').text('Choose an opponent')
+  return resetGame
 }
-
+//------------------------------------------------------------
+// SCOREBOARD
+//------------------------------------------------------------
+var updateScoreboard = function () {
+  //update finder scoreboard
+  $('#scoreboard-finder > .score').text(finderScore);
+  //update swindler scoreboard
+  $('#scoreboard-swindler > .score').text(swindlerScore);
+}
 
 //Instantiating new game
 var game = new Game();
 
 $(document).ready(function() {
-  $('#game-computer').click(function() {
+  var tempArr;
+  updateScoreboard();
+  $(document).on('click', '#reset-game', function () {
+    game = resetGame();
+  });
+  $(document).on('click', '#game-computer', function () {
     game.start(true);
   });
-  $('#game-player').click(function() {
+  $(document).on('click', '#game-player', function () {
     game.start();
   });
+  //bind event to that button
+  $(document).on('click', '#record-complete', function () {
+    //unbind button to prevent stacking
+    $('#create-buttons button').unbind();
+    game.finderFollow();
+    $('#create-buttons').slideUp();
+  });
+  $(document).on('click', '#start-shuffle', function () {
+    $('.selected').animate({ left: '-=60', top: '+=60' }, 200);
+    //unbind event
+    $(this).unbind();
+    //call animateMoves
+    animateMovesArray(game.movesArray);
+    findBall(placeBall(game.cupArray));
+  });
+  $(document).on('click', '.create-move button', game.recordPlayerMove);
 });
