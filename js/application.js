@@ -302,30 +302,30 @@ function Game() {
   }
 
   Game.prototype.recordPlayerMove = function () {
-  //remove buttons
-  $('#game-buttons button').remove();
-  var move;
-  var direction;
-  move = $(this).parent().index();
-  direction = $(this).index();
-  switch (direction) {
-    case 0:
-      direction = "left";
-      break;
-    case 1:
-      direction = "right";
-      break;
+    //remove buttons
+    $('#game-buttons button').remove();
+    var move;
+    var direction;
+    move = $(this).parent().index();
+    direction = $(this).index();
+    switch (direction) {
+      case 0:
+        direction = "left";
+        break;
+      case 1:
+        direction = "right";
+        break;
+    }
+    var newMove = new Move(move, direction);
+    console.log(move, direction);
+    animateMove(newMove);
+    movesArray.push(newMove);
+    console.log(movesArray);
+    if (movesArray.length >= 1) {
+      //generate next button
+      $('#game-buttons').html('<button class="btn btn-success btn-lg" id="record-complete">Finished Shuffling</button>');
+    }
   }
-  var newMove = new Move(move, direction);
-  console.log(move, direction);
-  animateMove(newMove);
-  movesArray.push(newMove);
-  console.log(movesArray);
-  if (movesArray.length >= 1) {
-    //generate next button
-    $('#game-buttons').html('<button class="btn btn-success btn-lg" id="record-complete">Finished Shuffling</button>');
-  }
-}
 }
 
 //------------------------------------------------------------
