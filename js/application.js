@@ -2,9 +2,11 @@
 //Global Variables
 //controls the speed of the shuffling in ms (Higher = slower)
 var speed = 500;
+var playerLimit = 5;
 var finderScore = 0;
 var swindlerScore = 0;
-
+var versusPlayerColor = "#70A53B";
+var finderColor = "#FDD476"
 
 //Random Function
 var rand = function (limit) {
@@ -246,6 +248,8 @@ function Game() {
   }
 
   Game.prototype.finderFollow = function () {
+    //Indicate Player change if needed
+    $('body').css({ "background-color": finderColor});
     //Grab arrays to ensure scope
      // var movesArray = movesArray;
     //remove the balls inside the cup
@@ -278,6 +282,8 @@ function Game() {
   
   //Versus player function 
   Game.prototype.versusPlayer = function () {
+    //Change color
+    $('body').css({ "background-color": versusPlayerColor});
     var startingPosition
     //Bind hover event
     $('.cup').bind('mouseenter',animateUp);
@@ -321,7 +327,7 @@ function Game() {
     animateMove(newMove);
     movesArray.push(newMove);
     console.log(movesArray);
-    if (movesArray.length >= 1) {
+    if (movesArray.length >= playerLimit) {
       //generate next button
       $('#game-buttons').html('<button class="btn btn-success btn-lg" id="record-complete">Finished Shuffling</button>');
     }
@@ -362,16 +368,17 @@ $(document).ready(function() {
   $(document).on('click', '#reset-game', function () {
     game = resetGame();
   });
-
   $(document).on('click', '#game-computer', function () {
     game.start(true);
   });
   $(document).on('click', '#game-player', function () {
     game.start();
   });
-      //bind event to that button
+  //bind event to that button
   $(document).on('click', '#record-complete', function () {
+    //unbind button to prevent stacking
+    $('#create-buttons button').unbind();
     game.finderFollow();
     $('#create-buttons').slideUp();
-  })  
+  });
 });

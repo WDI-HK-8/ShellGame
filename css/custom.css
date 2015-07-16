@@ -20,6 +20,10 @@ h3 {
   font-size: 2em;
 }
 
+ul {
+  list-style-type: none;
+}
+
 .title {
   font-family: comicfont, Helvetica;
 }
@@ -39,10 +43,11 @@ h3 {
   border-radius: 15px;
   padding-right: 80px;
   margin-left: 25px;
+  min-height:400px;
+  max-width:900px;
 }
 
 .cup {
-<<<<<<< HEAD
   min-width: 80px;
   min-height: 80px;
   position: relative;
@@ -117,7 +122,7 @@ h3 {
 
 .scoreboard {
   background-color: #96D2ED;
-  min-height: 1000px;
+  min-height: 1200px;
   color: black;
   border-left: 1px solid black;
   border-right: 1px solid black;
