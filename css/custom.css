@@ -37,6 +37,8 @@ h3 {
   background-color: rgba(0,0,0,0.4);
   display: inline-block;
   border-radius: 15px;
+  padding-right: 80px;
+  margin-left: 25px;
 }
 
 .cup {
@@ -48,26 +50,31 @@ h3 {
   margin-left: 80px;
 }
 
-.cup:first-child {
-  margin-left:130px;
-}
 
-#create {
+#create-container {
   position:relative;
   display: inline-block;
   clear:both;
-  margin-left: 80px;
   min-height: 60px;
+}
+
+#create-buttons {
+  display:none;
+  margin-left: 40px;
+}
+
+#create-buttons button {
+  margin-left:20px;
+}
+
+.create-move:last-child {
+  margin-left: 80px;
 }
 
 .create-move {
   position:relative;
   display: inline;
   margin: 0 60px;
-}
-
-.create-move button:last-child {
-  margin-left: 50px;
 }
 
 .cup:last-child {
@@ -123,5 +130,8 @@ h3 {
   }
   .scoreboard h3 {
     margin:0;
+  }
+  #game-screen {
+    margin-left:125px;
   }
 }

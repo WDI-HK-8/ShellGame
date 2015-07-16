@@ -4,7 +4,7 @@
 var speed = 500;
 var finderScore = 0;
 var swindlerScore = 0;
-var startPosition;
+
 
 //Random Function
 var rand = function (limit) {
@@ -66,29 +66,6 @@ var cloneCups = function (arr) {
   return newCupArray;
 }
 
-  //Change communication
-  // $('#communication').html('Shuffle the cups! Click on a cup and move it around!');
-//------------------------------------------------------------
-// PLAYER VS PLAYER
-//------------------------------------------------------------
-var recordPlayerMove = function () {
-  var move;
-  var direction;
-  move = $(this).parent().index();
-  direction = $(this).index();
-  switch (direction) {
-    case 0:
-      direction = "left";
-      break;
-    case 1:
-      direction = "right";
-      break;
-  }
-  var newMove = new Move(move, direction);
-  console.log(move, direction);
-  animateMove(newMove);
-  return newMove;
-}
 
 //------------------------------------------------------------
 // Animations
@@ -193,12 +170,12 @@ var findBall = function (ballLocatedAt) {
     $('.cup').unbind();
     var clickedIndex = $(this).index();
     if (clickedIndex === ballLocatedAt) {
-      $('#communication').html('YOU WIN')
+      $('#communication').html('FINDER WIN')
       finderScore++;
       //increase difficulty
       speed *= 0.8
     } else {
-      $('#communication').html('YOU LOSE')
+      $('#communication').html('SWINDLER WIN')
       swindlerScore++;
       //default speed when lose
       speed = 600
@@ -206,7 +183,7 @@ var findBall = function (ballLocatedAt) {
     //update score
     updateScoreboard();
     //create reset button
-    $('#game-buttons').html('<button id="reset-game" class="btn btn-danger btn-lg">Reset</button>');
+    $('#game-buttons').html('<button id="reset-game" class="btn btn-danger btn-lg">Play Again</button>');
   });
 }
 
@@ -215,16 +192,18 @@ var findBall = function (ballLocatedAt) {
 //------------------------------------------------------------
 function Game() {
   //variables
-  this.cupArray = [];
-  this.movesArray = [];
+  var cupArray = [];
+  var movesArray = [];
   this.numberOfCups = 3;
+  var playerMoveArray = [];
+  var startPosition;
 
   Game.prototype.createCups = function () {
     //generate cups
     for (var i = 0; i < this.numberOfCups; i++) {
-      this.cupArray.push(new Cup("cup" + eval('i+1'),false));
+      cupArray.push(new Cup("cup" + eval('i+1'),false));
     }
-    console.log("Cup Array:" + this.cupArray);
+    console.log("Cup Array:" + cupArray);
   }
 
   //generate computer start position and x random moves
@@ -232,7 +211,7 @@ function Game() {
     //generate start position
     var randomStartPosition = rand(2);
     console.log(randomStartPosition);
-    this.cupArray[randomStartPosition].hasBall = true;
+    cupArray[randomStartPosition].hasBall = true;
     startPosition = randomStartPosition;
     for (var i = 0; i < numberOfMoves; i++) {
       //generate numbers for move
@@ -240,7 +219,7 @@ function Game() {
       var randomDirection = rand(1);
       var randomDirectionString
       randomDirection===0 ? randomDirectionString = 'left' : randomDirectionString = 'right';
-      this.movesArray.push(new Move(randomPosition,randomDirectionString));
+      movesArray.push(new Move(randomPosition,randomDirectionString));
     }
   }
 
@@ -268,35 +247,29 @@ function Game() {
 
   Game.prototype.finderFollow = function () {
     //Grab arrays to ensure scope
-     var movesArray = this.movesArray;
-     var cupArray = this.cupArray;
+     // var movesArray = movesArray;
     //remove the balls inside the cup
     $('.ball').remove();
     //Change text on communication
     $('#communication').html("Click start when ready");
     $('#game-buttons').html('<button id="start-shuffle" class="btn btn-success btn-lg">Start</button>')
     //showing initial position
-    console.log(startPosition);
     console.log($('.cup')[startPosition]);
     $($('.cup')[startPosition]).append('<div class="ball"></div>');
     $($('.cup')[startPosition]).children('.cup-overlay').animate({ 
       left: '+=60', top: '-=60'
     }, 200);
     $($('.cup')[startPosition]).children('.cup-overlay').addClass('selected');
-
     //actually execute moves
     for (var i = 0; i < movesArray.length; i++) {
       cupArray = executeMove(movesArray[i], cupArray);
     }
-
     console.log(cupArray);
-
     $('#start-shuffle').click(function () {
       $('.selected').animate({ left: '-=60', top: '+=60' }, 200);
       //unbind event
       $(this).unbind();
       //call animateMoves
-      console.log(movesArray);
       animateMovesArray(movesArray);
       var ballLocatedAt = placeBall(cupArray);
       findBall(ballLocatedAt);
@@ -311,18 +284,48 @@ function Game() {
     $('.cup').bind('mouseleave',animateDown);
     //create click event
     $('.cup').click(function () {
+      $(this).children('.cup-overlay').animate({ left: '-=60', top: '+=60' }, 200);
+      //unbind event from all cups
+      $('.cup').unbind();
       startPosition = $(this).index();
-      recordPlayerMove();
+      cupArray[startPosition].hasBall = true;
+      console.log(cupArray);
+      //Create buttons
+      $('#create-buttons').slideDown()
+      $('.create-move button').click(game.recordPlayerMove);
+      //Change communication
+      $('#communication').text('Click on an arrow to shuffle a cup!');
     });
     //Change communication
     $('#communication').text('Click on a shell to hide the ball!');
     //
   }
 
-  Game.prototype.test = function () {
-    console.log("works");
-    console.log(startingPosition);
+  Game.prototype.recordPlayerMove = function () {
+  //remove buttons
+  $('#game-buttons button').remove();
+  var move;
+  var direction;
+  move = $(this).parent().index();
+  direction = $(this).index();
+  switch (direction) {
+    case 0:
+      direction = "left";
+      break;
+    case 1:
+      direction = "right";
+      break;
   }
+  var newMove = new Move(move, direction);
+  console.log(move, direction);
+  animateMove(newMove);
+  movesArray.push(newMove);
+  console.log(movesArray);
+  if (movesArray.length >= 1) {
+    //generate next button
+    $('#game-buttons').html('<button class="btn btn-success btn-lg" id="record-complete">Finished Shuffling</button>');
+  }
+}
 }
 
 //------------------------------------------------------------
@@ -354,6 +357,7 @@ var updateScoreboard = function () {
 var game = new Game();
 
 $(document).ready(function() {
+  var tempArr;
   updateScoreboard();
   $(document).on('click', '#reset-game', function () {
     game = resetGame();
@@ -365,5 +369,9 @@ $(document).ready(function() {
   $(document).on('click', '#game-player', function () {
     game.start();
   });
-  game.movesArray.push($('.create-move button').click(recordPlayerMove));
+      //bind event to that button
+  $(document).on('click', '#record-complete', function () {
+    game.finderFollow();
+    $('#create-buttons').slideUp();
+  })  
 });
