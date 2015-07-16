@@ -1,18 +1,39 @@
 <!DOCTYPE html>
-<html>
-<head>
-	<meta charset="utf-8">
-	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>Eyes on the Prize</title>
-	<link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap.min.css">
-	<script src="bower_components/jQuery/dist/jquery.min.js" ></script>
-	<script src="bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
-	<link rel="stylesheet" type="text/css" href="css/custom.css">
-	<script src="js/application.js"></script>
-</head>
-<body>
-	<div class="container">
-		<h1>Hello World</h1>
-	</div>
-</body>
-</html>
+  <html>
+    <head>
+    	<meta charset="utf-8">
+    	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+    	<title>Eyes on the Prize</title>
+    	<link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap.min.css">
+    	<script src="bower_components/jQuery/dist/jquery.min.js" ></script>
+    	<script src="bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+    	<link rel="stylesheet" type="text/css" href="css/custom.css">
+    	<script src="js/application.js"></script>
+    </head>
+    <body>
+    	<div class="container">
+    		<div class="align-center" id="game-holder">
+    			<h1 class="text-center title">Shell Game</h1>
+    			<h3 id="communication" class="text-center">Choose an opponent</h3>
+    			<div id="game-screen">
+    				<div class="cup">
+    					<div class="ball"></div>
+    					<div class="cup-overlay"></div>
+    				</div>
+    				<div class="cup">
+    					<div class="ball"></div>
+    					<div class="cup-overlay"></div>
+    				</div>
+    				<div class="cup">
+    					<div class="ball"></div>
+    					<div class="cup-overlay"></div>
+    				</div>
+    			</div>
+    			<div id="game-buttons" class="text-center">
+    				<button class="btn btn-default" id="game-player">Player</button>
+    				<button class="btn btn-default" id="game-computer">Computer</button>
+    			</div>	
+    		</div>
+    	</div>
+    </body>
+  </html>
