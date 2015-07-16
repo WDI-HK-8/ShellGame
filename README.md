@@ -10,8 +10,9 @@ the second player (or the player if against a computer) will see where the ball 
 ## Installation
 
 - Clone the repository into your computer
-- Run bower install in your terminal on the directory where the repository is located
-- Start a webserver inside the directory and go to the webserver address
+- Run [bower](http://www.bower.io) install in your terminal on the directory where the repository is located.
+- Start a webserver inside the directory and go to the webserver address OR open index.html.   (Webserver prefered)
+
 
 ## Basic Gameplay
 
@@ -21,6 +22,8 @@ the second player (or the player if against a computer) will see where the ball 
 - Player 2 will see the balls initial position
 - Once player 2 is ready the game will start shuffling the cups around according to player 1's movements
 - Player 2 will select where the ball ends up, if he/she gets it correct they win.
+
+## 
 
 
 

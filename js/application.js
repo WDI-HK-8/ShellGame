@@ -7,6 +7,9 @@ var finderScore = 0;
 var swindlerScore = 0;
 var versusPlayerColor = "#70A53B";
 var finderColor = "#FDD476"
+var cupArray = [];
+var movesArray = [];
+var startPosition;
 
 //Random Function
 var rand = function (limit) {
@@ -143,8 +146,9 @@ var animateDown = function () {
 //------------------------------------------------------------
 // Ball Functions
 //------------------------------------------------------------
-var placeBall = function (cupArray) {
+var placeBall = function () {
   var ballLocatedAt;
+  console.log(cupArray)
   cupArray.forEach(function(element, index) {
     //check element for has ball
     $(this).removeClass('selected');
@@ -194,17 +198,16 @@ var findBall = function (ballLocatedAt) {
 //------------------------------------------------------------
 function Game() {
   //variables
-  this.cupArray = [];
-  this.movesArray = [];
+  cupArray = [];
+  movesArray = [];
   this.numberOfCups = 3;
-  this.startPosition;
 
   Game.prototype.createCups = function () {
     //generate cups
     for (var i = 0; i < this.numberOfCups; i++) {
-      this.cupArray.push(new Cup("cup" + eval('i+1'),false));
+      cupArray.push(new Cup("cup" + eval('i+1'),false));
     }
-    console.log("Cup Array:" + this.cupArray);
+    console.log("Cup Array:" + cupArray);
   }
 
   //generate computer start position and x random moves
@@ -212,15 +215,15 @@ function Game() {
     //generate start position
     var randomStartPosition = rand(2);
     console.log(randomStartPosition);
-    this.cupArray[randomStartPosition].hasBall = true;
-    this.startPosition = randomStartPosition;
+    cupArray[randomStartPosition].hasBall = true;
+    startPosition = randomStartPosition;
     for (var i = 0; i < numberOfMoves; i++) {
       //generate numbers for move
       var randomPosition = rand(2);
       var randomDirection = rand(1);
       var randomDirectionString
       randomDirection===0 ? randomDirectionString = 'left' : randomDirectionString = 'right';
-      this.movesArray.push(new Move(randomPosition,randomDirectionString));
+      movesArray.push(new Move(randomPosition,randomDirectionString));
     }
   }
 
@@ -247,26 +250,24 @@ function Game() {
   }
 
   Game.prototype.finderFollow = function () {
-    var cupArray = this.cupArray;
     //Indicate Player change if needed
     $('body').css({ "background-color": finderColor});
     //Grab arrays to ensure scope
-    var movesArray = this.movesArray;
     //remove the balls inside the cup
     $('.ball').remove();
     //Change text on communication
     $('#communication').html("Click start when ready");
     $('#game-buttons').html('<button id="start-shuffle" class="btn btn-success btn-lg">Start</button>')
     //showing initial position
-    console.log($('.cup')[this.startPosition]);
-    $($('.cup')[this.startPosition]).append('<div class="ball"></div>');
-    $($('.cup')[this.startPosition]).children('.cup-overlay').animate({ 
+    console.log($('.cup')[startPosition]);
+    $($('.cup')[startPosition]).append('<div class="ball"></div>');
+    $($('.cup')[startPosition]).children('.cup-overlay').animate({ 
       left: '+=60', top: '-=60'
     }, 200);
-    $($('.cup')[this.startPosition]).children('.cup-overlay').addClass('selected');
+    $($('.cup')[startPosition]).children('.cup-overlay').addClass('selected');
     //actually execute moves
     for (var i = 0; i < movesArray.length; i++) {
-      this.cupArray = executeMove(movesArray[i], this.cupArray);
+      cupArray = executeMove(movesArray[i], cupArray);
     }
   }
   
@@ -274,7 +275,8 @@ function Game() {
   Game.prototype.versusPlayer = function () {
     //Change color
     $('body').css({ "background-color": versusPlayerColor});
-    var startPosition
+    //remove buttons
+    $('#game-buttons button').remove();
     //Bind hover event
     $('.cup').bind('mouseenter',animateUp);
     $('.cup').bind('mouseleave',animateDown);
@@ -283,8 +285,8 @@ function Game() {
       $(this).children('.cup-overlay').animate({ left: '-=60', top: '+=60' }, 200);
       //unbind event from all cups
       $('.cup').unbind();
-      game.startPosition = $(this).index();
-      game.cupArray[game.startPosition].hasBall = true;
+      startPosition = $(this).index();
+      cupArray[startPosition].hasBall = true;
       //Create buttons
       $('#create-buttons').slideDown()
       //Change communication
@@ -319,8 +321,8 @@ function Game() {
   }
 
   Game.prototype.pushMove = function (move) {
-    this.movesArray.push(move);
-    console.log(this.movesArray);
+    movesArray.push(move);
+    console.log(movesArray);
   }
 }
 
@@ -375,8 +377,8 @@ $(document).ready(function() {
     //unbind event
     $(this).unbind();
     //call animateMoves
-    animateMovesArray(game.movesArray);
-    findBall(placeBall(game.cupArray));
+    animateMovesArray(movesArray);
+    findBall(placeBall());
   });
 
   $(document).on('click', '.create-move button', game.recordPlayerMove);
