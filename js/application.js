@@ -1,8 +1,12 @@
 'use strict';
 //Global Variables
+//Variables for settings
 //controls the speed of the shuffling in ms (Higher = slower)
 var speed = 500;
+//Limit player has to make before he/she can end turn
 var playerLimit = 5;
+
+//Variables for game
 var finderScore = 0;
 var swindlerScore = 0;
 var versusPlayerColor = "#70A53B";
@@ -275,6 +279,11 @@ function Game() {
   Game.prototype.versusPlayer = function () {
     //Change color
     $('body').css({ "background-color": versusPlayerColor});
+    //remove all balls
+    $('.ball').remove();
+    $( '.cup' ).each(function (index, element) {
+      $(element).append('<div class="ball"></div>')
+    });
     //remove buttons
     $('#game-buttons button').remove();
     //Bind hover event
@@ -382,6 +391,4 @@ $(document).ready(function() {
   });
 
   $(document).on('click', '.create-move button', game.recordPlayerMove);
-
-
 });
